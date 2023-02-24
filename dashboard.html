@@ -64,7 +64,7 @@
                             <option value="Female">Female</option>
                         </select>
                     </div>
-                    <button id="modify-btn" type="button" class="btn btn-primary mt-2">Modify</button>
+                    <button id="modify-btn" type="button" class="btn btn-primary mt-2" onclick="modifyInputStatus()">Modify</button>
                     <button id="save-btn" type="button" class="btn btn-primary mt-2" style="display: none;"
                         onclick="saveData()">Save</button>
                 </div>
@@ -168,6 +168,18 @@
                 .catch(error => console.error('Error while saving data:', error));
         }
 
+        function modifyInputStatus() {
+            document.getElementById('user_name').removeAttribute('readonly');
+            document.getElementById('user_surname').removeAttribute('readonly');
+            document.getElementById('user_birthdate').removeAttribute('readonly');
+            document.getElementById('user_birthcity').removeAttribute('readonly');
+            document.getElementById('user_gender').removeAttribute('readonly');
+            document.querySelector("#modify-btn").style.display ='none'
+            document.querySelector("#save-btn").style.display ='block'
+
+
+        }
+
 
 
 
@@ -252,12 +264,6 @@
                 document.querySelector("#user-gender").value = row.cells[4].textContent;
                 document.querySelector("#user-birthcity").value = row.cells[5].textContent;
 
-                
-
-                
-                
-
-                // Prevent the default behavior of the button (i.e., submitting the form)
                 event.preventDefault();
                 document.querySelector('#save-changes-modify').style.display = 'block';
                 document.querySelector('#admin-form-container').style.display = 'block';
@@ -305,21 +311,21 @@
             formData.append('gender', gender);
             console.log(formData.toString())
             fetch('http://localhost/writer/profile', {
-                    method: 'PUT',
-                    headers: {
-                        Authorization: `${accessToken}`,
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: formData.toString()
+                method: 'PUT',
+                headers: {
+                    Authorization: `${accessToken}`,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    console.log('Data saved successfully');
+                    //location.reload();
                 })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        console.log('Data saved successfully');
-                        //location.reload();
-                    })
-                    .catch(error => console.error('Error while saving data:', error));
+                .catch(error => console.error('Error while saving data:', error));
         }
 
 
