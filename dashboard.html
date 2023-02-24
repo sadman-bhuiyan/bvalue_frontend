@@ -89,7 +89,35 @@
             <tbody>
             </tbody>
         </table>
-        <div id="admin-form-container"></div>
+        <div id="admin-form-container" style="display: none;">
+            <div class="form-group">
+                <h1 class="text-center mb-5">Modify User</h1>
+                <label for="user-id">ID:</label>
+                <input type="text" class="form-control" id="user-id" readonly>
+            </div>
+            <div class="form-group">
+                <label for="user-name">Name:</label>
+                <input type="text" class="form-control" id="user-name">
+            </div>
+            <div class="form-group">
+                <label for="user-surname">Surname:</label>
+                <input type="text" class="form-control" id="user-surname">
+            </div>
+            <div class="form-group">
+                <label for="user-birthdate">Birthdate:</label>
+                <input type="text" class="form-control" id="user-birthdate">
+            </div>
+            <div class="form-group">
+                <label for="user-gender">Gender:</label>
+                <input type="text" class="form-control" id="user-gender">
+            </div>
+            <div class="form-group">
+                <label for="user-birthcity">Birth City:</label>
+                <input type="text" class="form-control" id="user-birthcity">
+            </div>
+        </div>
+        <button id="save-changes-modify" type="submit" class="btn btn-primary" onclick="saveAdmin()"
+            style="display: none;">Save changes</button>
 
     </div>
 
@@ -140,7 +168,7 @@
                 .catch(error => console.error('Error while saving data:', error));
         }
 
-        
+
 
 
 
@@ -217,77 +245,44 @@
         tableBody.addEventListener('click', (event) => {
             if (event.target.classList.contains('modify-user')) {
                 const row = event.target.closest('tr');
-                const userId = row.cells[0].textContent;
-                const userName = row.cells[1].textContent;
-                const userSurname = row.cells[2].textContent;
-                const userBirthdate = row.cells[3].textContent;
-                const userGender = row.cells[4].textContent;
-                const userBirthcity = row.cells[5].textContent;
+                document.querySelector("#user-id").value = row.cells[0].textContent;
+                document.querySelector("#user-name").value = row.cells[1].textContent;
+                document.querySelector("#user-surname").value = row.cells[2].textContent;
+                document.querySelector("#user-birthdate").value = row.cells[3].textContent;
+                document.querySelector("#user-gender").value = row.cells[4].textContent;
+                document.querySelector("#user-birthcity").value = row.cells[5].textContent;
 
-                const form = document.createElement('form');
-                form.id = 'admin-form';
-                form.innerHTML = `
-      <div class="form-group">
-        <h1 class="text-center mb-5">Modify User</h1>
-        <label for="user-id">ID:</label>
-        <input type="text" class="form-control" id="user-id" value="${userId}" readonly>
-      </div>
-      <div class="form-group">
-        <label for="user-name">Name:</label>
-        <input type="text" class="form-control" id="user-name" value="${userName}">
-      </div>
-      <div class="form-group">
-        <label for="user-surname">Surname:</label>
-        <input type="text" class="form-control" id="user-surname" value="${userSurname}">
-      </div>
-      <div class="form-group">
-        <label for="user-birthdate">Birthdate:</label>
-        <input type="text" class="form-control" id="user-birthdate" value="${userBirthdate}">
-      </div>
-      <div class="form-group">
-        <label for="user-gender">Gender:</label>
-        <input type="text" class="form-control" id="user-gender" value="${userGender}">
-      </div>
-      <div class="form-group">
-        <label for="user-birthcity">Birth City:</label>
-        <input type="text" class="form-control" id="user-birthcity" value="${userBirthcity}">
-      </div>
-      <button type="submit" class="btn btn-primary">Save changes</button>
-    `;
+                
 
-                // Append the form to the container element
-                const container = document.querySelector('#admin-form-container');
-                console.log(container)
-                container.innerHTML = '';
-                container.appendChild(form);
-
-                // Scroll to the form element
-                form.scrollIntoView({ behavior: 'smooth' });
+                
+                
 
                 // Prevent the default behavior of the button (i.e., submitting the form)
                 event.preventDefault();
-            }else{
+                document.querySelector('#save-changes-modify').style.display = 'block';
+                document.querySelector('#admin-form-container').style.display = 'block';
+            } else {
                 const accessToken = getCookie('token');
                 const row = event.target.closest('tr');
                 const userId = row.cells[0].textContent;
                 const formData = new URLSearchParams();
                 formData.append('user_id', userId)
                 fetch('http://localhost/writer/profile', {
-                method: 'DELETE',
-                headers: {
-                    Authorization: `${accessToken}`,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: formData.toString()
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    console.log('Data saved successfully');
-                    //location.reload();
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: `${accessToken}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData.toString()
                 })
-                .catch(error => console.error('Error while saving data:', error));
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        console.log('Data saved successfully');
+                        //location.reload();
+                    })
+                    .catch(error => console.error('Error while saving data:', error));
                 console.log("delete")
             }
         });
@@ -298,7 +293,7 @@
             const birthdate = document.getElementById('user-birthdate').value;
             const birthcity = document.getElementById('user-birthcity').value;
             const gender = document.getElementById('user-gender').value;
-            const profile_id = document.getElementById('user-id').innerText;
+            const profile_id = document.getElementById('user-id').value;
             console.log(profile_id)
 
             const formData = new URLSearchParams();
@@ -308,10 +303,23 @@
             formData.append('birthdate', birthdate);
             formData.append('birthcity', birthcity);
             formData.append('gender', gender);
-            console.log(formData)
-            
-            
-                
+            console.log(formData.toString())
+            fetch('http://localhost/writer/profile', {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `${accessToken}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData.toString()
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        console.log('Data saved successfully');
+                        //location.reload();
+                    })
+                    .catch(error => console.error('Error while saving data:', error));
         }
 
 
